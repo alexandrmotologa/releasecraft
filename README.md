@@ -34,6 +34,32 @@ Once approved, ReleaseCraft prepends the formatted entry to `CHANGELOG.md`, bump
 - **Webhook dispatching**: Notifies Discord, Slack, or custom webhooks upon release publication.
 - **Changelog updater**: Inserts the new release block beneath the top header in `CHANGELOG.md` while leaving previous release history intact.
 
+## Screenshots
+
+### Interactive Terminal Curation (TUI)
+
+Maintainers can review unreleased commits, toggle items into release notes, edit subjects inline, and inspect rendered markdown in real time:
+
+<p align="center">
+  <img src="docs/images/tui_screenshot.png?raw=true" alt="ReleaseCraft Interactive TUI" width="960" />
+</p>
+
+### CLI Release Preview & Executive Highlights
+
+Generate the next release summary with breaking changes, semantic version calculation, and key highlights before applying changes:
+
+<p align="center">
+  <img src="docs/images/cli_preview.png?raw=true" alt="ReleaseCraft Release Preview" width="960" />
+</p>
+
+### Conventional Commits Diagnostic Check
+
+Inspect unreleased commits to ensure strict conformance with Conventional Commits specifications:
+
+<p align="center">
+  <img src="docs/images/cli_check.png?raw=true" alt="ReleaseCraft Commit Convention Check" width="960" />
+</p>
+
 ## Installation
 
 ### Prerequisites

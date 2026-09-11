@@ -1,4 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+const fs = require('fs');
+const path = require('path');
+// Use the @resvg/resvg-js installed in the parent scratch directory
+const { Resvg } = require(path.resolve(__dirname, '../../node_modules/@resvg/resvg-js'));
+
+function buildLogoSvg() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
   <defs>
     <clipPath id="squircle-clip">
       <rect x="24" y="24" width="976" height="976" rx="220" />
@@ -160,4 +166,25 @@
 
     </g>
   </g>
-</svg>
+</svg>`;
+}
+
+async function main() {
+  const outputDir = path.resolve(__dirname, '../docs/images');
+  const svg = buildLogoSvg();
+  const svgPath = path.join(outputDir, 'logo.svg');
+  const pngPath = path.join(outputDir, 'logo.png');
+
+  fs.writeFileSync(svgPath, svg, 'utf8');
+  console.log('✓ Wrote docs/images/logo.svg');
+
+  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1024 } });
+  const pngData = resvg.render().asPng();
+  fs.writeFileSync(pngPath, pngData);
+  console.log('✓ Successfully rendered docs/images/logo.png at 1024x1024 with Resvg');
+}
+
+main().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
