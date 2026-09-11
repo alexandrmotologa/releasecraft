@@ -8,11 +8,17 @@ ReleaseCraft looks for an optional configuration file named `.releasecraft.yaml`
 # Version tag pattern. Default: "v{version}"
 tag_format: "v{version}"
 
+# Optional tag prefix (e.g. for monorepos: "cli-")
+tag_prefix: ""
+
 # Target changelog file path. Default: "CHANGELOG.md"
 changelog_path: "CHANGELOG.md"
 
 # Git remote name. Default: "origin"
 remote: "origin"
+
+# Automatically synchronize version in pyproject.toml, package.json, Cargo.toml
+bump_manifests: true
 
 # Conventional commit section definitions
 sections:
@@ -57,11 +63,22 @@ links:
   issue_url: "https://github.com/owner/repository/issues/{id}"
   commit_url: "https://github.com/owner/repository/commit/{hash}"
 
+# Webhook announcements upon release
+webhooks:
+  - url: "https://discord.com/api/webhooks/..."
+    type: "discord"
+  - url: "https://hooks.slack.com/services/..."
+    type: "slack"
+
 # Release options
 release:
   sign_tag: false
   create_draft: false
   prerelease: false
+  generate_checksums: true
+  assets:
+    - "dist/*.whl"
+    - "dist/*.tar.gz"
 ```
 
 ## Section visibility

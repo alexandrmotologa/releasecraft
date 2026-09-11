@@ -93,6 +93,7 @@ class ChangelogBuilder:
         prev_version: SemVerInfo | None = None,
         date_str: str | None = None,
         include_hidden: bool = False,
+        include_highlights: bool = False,
     ) -> tuple[str, list[ReleaseSection]]:
         """Generate release notes block in Markdown format.
 
@@ -111,6 +112,15 @@ class ChangelogBuilder:
         )
         lines.append(header)
         lines.append("")
+
+        # Optional executive highlights
+        if include_highlights:
+            from releasecraft.changelog.highlights import HighlightsSynthesizer
+
+            highlights_block = HighlightsSynthesizer.synthesize(commits)
+            if highlights_block:
+                lines.append(highlights_block.strip())
+                lines.append("")
 
         visible_sections = [s for s in sections if not s.hidden]
         if not visible_sections:

@@ -115,3 +115,54 @@ def test_cli_full_release_execution(repo_with_commits: git.Repo, tmp_path: Path)
     # Verify HEAD commit is the release chore
     head_msg = repo_with_commits.head.commit.message
     assert head_msg.strip() == "chore(release): v1.1.0"
+
+
+def test_cli_hook_install_uninstall(repo_with_commits: git.Repo, tmp_path: Path) -> None:
+    res_install = runner.invoke(app, ["hook", "install", str(tmp_path)])
+    assert res_install.exit_code == 0
+    assert "Installed commit-msg hook" in res_install.stdout
+
+    hook_file = tmp_path / ".git" / "hooks" / "commit-msg"
+    assert hook_file.is_file()
+
+    res_uninstall = runner.invoke(app, ["hook", "uninstall", str(tmp_path)])
+    assert res_uninstall.exit_code == 0
+    assert "Successfully removed" in res_uninstall.stdout
+    assert not hook_file.is_file()
+
+
+def test_cli_preview_with_highlights(repo_with_commits: git.Repo, tmp_path: Path) -> None:
+    res = runner.invoke(app, ["preview", "--highlights", str(tmp_path)])
+    assert res.exit_code == 0
+    assert "#### 🌟 Highlights" in res.stdout
+
+
+def test_cli_release_with_manifest_bump(repo_with_commits: git.Repo, tmp_path: Path) -> None:
+    # Add a pyproject.toml
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text('[project]\nname = "demo"\nversion = "1.0.0"\n', encoding="utf-8")
+    repo_with_commits.index.add([str(pyproject)])
+    repo_with_commits.index.commit("chore: add pyproject.toml")
+
+    # Add feature
+    app_py = tmp_path / "app.py"
+    app_py.write_text("print('version 2')", encoding="utf-8")
+    repo_with_commits.index.add([str(app_py)])
+    repo_with_commits.index.commit("feat: add cool feature")
+
+    res = runner.invoke(
+        app,
+        [
+            "release",
+            "--no-interactive",
+            "--no-push",
+            "--no-publish",
+            "--bump-manifests",
+            str(tmp_path),
+        ],
+    )
+    assert res.exit_code == 0
+
+    # Verify pyproject.toml was bumped to 1.1.0 and committed
+    content = pyproject.read_text(encoding="utf-8")
+    assert 'version = "1.1.0"' in content

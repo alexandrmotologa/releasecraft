@@ -18,6 +18,7 @@ class LogWalker:
         base_tag: str | None = None,
         head_ref: str = "HEAD",
         reverse: bool = True,
+        path_filter: str | None = None,
     ) -> list[RawCommit]:
         """Fetch commits between base_tag and head_ref.
 
@@ -26,20 +27,23 @@ class LogWalker:
             head_ref: Target head reference (default: HEAD).
             reverse: If True, returns oldest commits first (chronological order).
                      If False, returns newest commits first.
+            path_filter: Optional relative path to restrict commits touching specific files or directories.
 
         Returns:
             List of RawCommit instances.
         """
+        kwargs = {}
+        if path_filter:
+            kwargs["paths"] = path_filter
+
         if base_tag:
             rev_range = f"{base_tag}..{head_ref}"
             try:
-                git_commits = list(self.repo.iter_commits(rev_range))
+                git_commits = list(self.repo.iter_commits(rev_range, **kwargs))
             except git.GitCommandError as err:
-                # Fallback if rev_range syntax fails
                 raise ValueError(f"Failed to resolve commit range {rev_range}") from err
         else:
-            # All commits up to head_ref
-            git_commits = list(self.repo.iter_commits(head_ref))
+            git_commits = list(self.repo.iter_commits(head_ref, **kwargs))
 
         raw_commits: list[RawCommit] = []
         for c in git_commits:

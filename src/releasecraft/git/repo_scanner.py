@@ -30,8 +30,11 @@ class RepoScanner:
         """Absolute root path of the git repository."""
         return Path(self.repo.working_tree_dir)
 
-    def get_latest_semver_tag(self) -> tuple[str | None, SemVerInfo | None]:
-        """Find the highest semantic version tag in the repository.
+    def get_latest_semver_tag(self, tag_prefix: str = "") -> tuple[str | None, SemVerInfo | None]:
+        """Find the highest semantic version tag in the repository matching optional prefix.
+
+        Args:
+            tag_prefix: Optional prefix filter (e.g. 'cli-' or 'pkg-').
 
         Returns:
             Tuple of (tag_name, SemVerInfo). If no semantic tags exist, returns (None, None).
@@ -40,9 +43,13 @@ class RepoScanner:
 
         for tag in self.repo.tags:
             tag_name = tag.name
-            match = SEMVER_REGEX.match(tag_name)
+            if tag_prefix and not tag_name.startswith(tag_prefix):
+                continue
+
+            target_version_str = tag_name[len(tag_prefix) :] if tag_prefix else tag_name
+            match = SEMVER_REGEX.match(target_version_str)
             if match:
-                clean_ver = tag_name.lstrip("v").lstrip("V")
+                clean_ver = target_version_str.lstrip("v").lstrip("V")
                 try:
                     parsed = semver.Version.parse(clean_ver)
                     valid_tags.append((parsed, tag_name))

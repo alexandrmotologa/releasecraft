@@ -8,6 +8,7 @@ from releasecraft.changelog.builder import ChangelogBuilder
 from releasecraft.models import RawCommit, SemVerInfo
 from releasecraft.parser.commit_parser import CommitParser
 from releasecraft.tui.app import ReleaseCraftApp
+from releasecraft.tui.screens import EditCommitModal
 
 
 def make_parsed_commit(message: str) -> CommitParser:
@@ -38,7 +39,6 @@ async def test_tui_app_mount_and_publish() -> None:
     )
 
     async with app.run_test() as pilot:
-        # Verify app initialized
         assert app.next_version.major == 1
         assert app.next_version.minor == 1
         assert not app.confirmed
@@ -50,8 +50,11 @@ async def test_tui_app_mount_and_publish() -> None:
 
 
 @pytest.mark.asyncio
-async def test_tui_app_quit_action() -> None:
-    commits = [make_parsed_commit("fix: quick fix")]
+async def test_tui_app_filter_and_quit() -> None:
+    commits = [
+        make_parsed_commit("feat: add dashboard"),
+        make_parsed_commit("fix: resolve crash"),
+    ]
     current = SemVerInfo(major=1, minor=0, patch=0)
     builder = ChangelogBuilder()
 
@@ -62,6 +65,22 @@ async def test_tui_app_quit_action() -> None:
     )
 
     async with app.run_test() as pilot:
+        # Test search filter
+        app.search_input.value = "crash"
+        await pilot.pause()
+        assert len(app.selection_list._options) == 1
+
+        # Clear filter
+        app.search_input.value = ""
+        await pilot.pause()
+        assert len(app.selection_list._options) == 2
+
         await pilot.press("q")
 
     assert app.confirmed is False
+
+
+@pytest.mark.asyncio
+async def test_edit_commit_modal() -> None:
+    modal = EditCommitModal("initial subject")
+    assert modal.initial_text == "initial subject"

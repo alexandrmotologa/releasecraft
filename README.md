@@ -18,18 +18,21 @@
 
 ReleaseCraft is a local-first Git release manager. It analyzes commit history between the most recent version tag and the current working head, calculates the next semantic version according to Conventional Commits 1.0.0, and presents an interactive terminal interface where maintainers can curate release notes before committing them.
 
-Once approved, ReleaseCraft prepends the formatted entry to `CHANGELOG.md`, creates an annotated git tag, pushes to origin, and publishes the release directly to GitHub.
+Once approved, ReleaseCraft prepends the formatted entry to `CHANGELOG.md`, bumps version numbers in project manifest files (`pyproject.toml`, `package.json`, `Cargo.toml`), creates an annotated git tag, pushes to origin, uploads release assets, and publishes the release directly to GitHub.
 
 ## Core capabilities
 
 - **Commit history traversal**: Locates the latest valid SemVer tag (`vX.Y.Z` or `X.Y.Z`) or falls back to the initial repository commit to scan all unreleased changes.
 - **Conventional commits parser**: Extracts type, scope, breaking changes markers (`!` or `BREAKING CHANGE:`), and footers from each commit message.
 - **Semantic version calculator**: Computes the next version bump according to SemVer 2.0.0 rules (major for breaking changes, minor for features, patch for fixes).
-- **Interactive terminal curation**: A Textual split-pane dashboard with commit toggles on the left and a live Markdown preview on the right.
+- **Interactive terminal curation**: A Textual split-pane dashboard with commit toggles on the left, inline message editing (`e`), section reclassification (`m`), real-time search (`/`), and a live Markdown preview on the right.
+- **Manifest synchronization**: Automatically updates version declarations across `pyproject.toml`, `package.json`, `Cargo.toml`, and `VERSION` files.
+- **Git hooks**: Enforces Conventional Commits rules on `git commit` via `releasecraft hook install`.
+- **Release asset attachments**: Resolves and uploads distribution archives or binary wheels to GitHub Releases, generating matching `SHA256SUMS` manifests.
+- **Monorepo support**: Restricts commit traversal by path or conventional scope (`--path packages/cli --tag-prefix cli-`).
+- **Release highlights**: Synthesizes breaking changes and primary features into an executive summary block.
+- **Webhook dispatching**: Notifies Discord, Slack, or custom webhooks upon release publication.
 - **Changelog updater**: Inserts the new release block beneath the top header in `CHANGELOG.md` while leaving previous release history intact.
-- **Pull request resolution**: Automatically extracts GitHub issue and pull request identifiers (`#42`) and links them in release notes.
-- **GitHub release publishing**: Creates official GitHub releases via the REST API using an active `GITHUB_TOKEN` or your local `gh` session.
-- **Commit linting**: Validates unreleased commits against Conventional Commits formatting rules with `releasecraft check`.
 
 ## Installation
 
@@ -85,7 +88,23 @@ Next version:     v1.5.0 (minor bump: 2 features, 3 fixes, 0 breaking)
 - (cache): invalidate stale session keys (#63)
 ```
 
-### 2. Validate commit conventions
+To include an executive highlights block:
+
+```bash
+releasecraft preview --highlights
+```
+
+### 2. Install the Git commit-msg hook
+
+Ensure all team members write valid Conventional Commits locally:
+
+```bash
+releasecraft hook install
+```
+
+When a developer runs `git commit`, ReleaseCraft checks the message format and rejects non-conforming messages before they enter the repository history.
+
+### 3. Validate commit conventions
 
 Check that all unreleased commits follow Conventional Commits formatting rules:
 
@@ -93,7 +112,7 @@ Check that all unreleased commits follow Conventional Commits formatting rules:
 releasecraft check
 ```
 
-### 3. Launch interactive release curation
+### 4. Launch interactive release curation
 
 Review and curate release notes in an interactive terminal user interface:
 
@@ -104,15 +123,28 @@ releasecraft release --interactive
 Keyboard controls in the TUI:
 - `Up` / `Down`: Navigate commit list
 - `Space`: Toggle commit inclusion in the release notes
+- `e`: Edit commit subject for the release notes
+- `m`: Reclassify commit to a different type (feat, fix, breaking)
+- `/`: Focus the search bar to filter commits by text
 - `p`: Approve and publish release
 - `q`: Cancel and exit
 
-### 4. Headless release in CI/CD
+### 5. Automated release with assets and manifest bump
 
-Run automated releases in continuous delivery pipelines:
+Run an automated release that bumps `pyproject.toml`, updates `CHANGELOG.md`, attaches distribution assets, and notifies a webhook:
 
 ```bash
-releasecraft release --no-interactive
+releasecraft release \
+  --assets "dist/*.whl" \
+  --assets "dist/*.tar.gz" \
+  --webhook "https://discord.com/api/webhooks/..." \
+  --webhook-type discord
+```
+
+For monorepos, release a specific package independently:
+
+```bash
+releasecraft release --path packages/cli --tag-prefix cli-
 ```
 
 To run without pushing to remote or calling external APIs, use dry run mode:
@@ -133,40 +165,16 @@ releasecraft/
 │       ├── config.py                # Configuration loader (.releasecraft.yaml)
 │       ├── models.py                # Pydantic schemas (Commit, Release, SemVer)
 │       ├── git/                     # Git repository inspection and tagging
+│       ├── manifests/               # Version synchronization in pyproject.toml, package.json
+│       ├── hooks/                   # commit-msg validator and installer
 │       ├── parser/                  # Conventional commit and SemVer calculation
-│       ├── changelog/               # Changelog generation and file updater
-│       ├── publisher/               # GitHub API client and git push logic
+│       ├── changelog/               # Changelog generation and highlights synthesis
+│       ├── publisher/               # Multi-forge client, asset uploader, webhooks
 │       └── tui/                     # Interactive Textual interface
 └── tests/
-    ├── unit/                        # Isolated tests for parsing and math
+    ├── unit/                        # Isolated tests for parsing, math, and manifests
     └── integration/                 # End-to-end tests on temporary git repositories
 ```
-
-## Configuration
-
-Place an optional `.releasecraft.yaml` in your repository root to configure section headers, hidden commit types, and tag formats:
-
-```yaml
-tag_format: "v{version}"
-changelog_path: "CHANGELOG.md"
-remote: "origin"
-
-sections:
-  - type: "breaking"
-    title: "Breaking Changes"
-    emoji: "⚠️"
-    hidden: false
-  - type: "feat"
-    title: "Features"
-    emoji: "🚀"
-    hidden: false
-  - type: "fix"
-    title: "Bug Fixes"
-    emoji: "🐛"
-    hidden: false
-```
-
-See [docs/configuration.md](docs/configuration.md) for full configuration options.
 
 ## Testing
 

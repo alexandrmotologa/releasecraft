@@ -1,10 +1,10 @@
 # Command line interface reference
 
-ReleaseCraft provides commands to preview version increments, generate changelogs, lint unreleased commits, and execute releases.
+ReleaseCraft provides commands to preview version increments, generate changelogs, lint unreleased commits, manage git hooks, and execute releases.
 
 ## releasecraft release
 
-Analyzes git history, calculates the next semantic version, updates the changelog, creates an annotated git tag, and pushes to remote.
+Analyzes git history, calculates the next semantic version, updates the changelog, bumps project manifest files, creates an annotated git tag, attaches release assets, and pushes to remote.
 
 ```bash
 releasecraft release [OPTIONS] [REPO_PATH]
@@ -16,10 +16,18 @@ releasecraft release [OPTIONS] [REPO_PATH]
 - `--dry-run`: Computes the version bump and prints the changelog without creating git tags or calling external APIs.
 - `--bump [major|minor|patch|pre]`: Forces a specific version bump override instead of calculating it from commit history.
 - `--prerelease [alpha|beta|rc]`: Creates a pre-release version tag (such as `1.2.0-rc.1`).
+- `--bump-manifests / --no-bump-manifests`: Automatically synchronizes new versions into `pyproject.toml`, `package.json`, `Cargo.toml`, and `VERSION` (default: true).
+- `--assets PATH`, `-a PATH`: Glob pattern for distribution assets to attach to the release (e.g. `dist/*.whl`).
+- `--generate-checksums / --no-checksums`: Generates a `SHA256SUMS` file alongside uploaded release assets (default: true).
+- `--highlights / --no-highlights`: Includes an executive highlights lead block summarizing breaking changes and top features.
+- `--path TEXT`: Restricts commit analysis to a specific directory (useful for monorepos).
+- `--scope TEXT`: Restricts commit analysis to a specific Conventional Commits scope.
+- `--tag-prefix TEXT`: Custom prefix for release tags (e.g. `cli-` produces `cli-v1.2.0`).
+- `--webhook URL`: Webhook endpoint to notify on release completion.
+- `--webhook-type [discord|slack|generic]`: Webhook payload format (default: `generic`).
 - `--publish / --no-publish`: Controls whether to publish the release to GitHub (defaults to true if `GITHUB_TOKEN` is available).
 - `--push / --no-push`: Controls whether to push the commit and tag to the git remote.
 - `--remote TEXT`: Git remote name (default: `origin`).
-- `--branch TEXT`: Git branch name (default: current checked-out branch).
 
 ## releasecraft preview
 
@@ -33,6 +41,10 @@ releasecraft preview [OPTIONS] [REPO_PATH]
 
 - `--json`: Outputs the release metadata and changelog as a structured JSON object.
 - `--include-all`: Includes chore and refactor commits that are excluded by default.
+- `--highlights / --no-highlights`: Includes executive highlights lead block.
+- `--path TEXT`: Filters commits by directory path.
+- `--scope TEXT`: Filters commits by scope.
+- `--tag-prefix TEXT`: Filters tags and prefixes output with custom tag prefix.
 
 ## releasecraft check
 
@@ -42,7 +54,9 @@ Validates all unreleased commits between the latest tag and `HEAD` against Conve
 releasecraft check [OPTIONS] [REPO_PATH]
 ```
 
-Returns exit code 0 if all commits follow conventional rules. Returns exit code 1 if invalid commit headers or formatting issues are detected.
+### Options
+
+- `--tag-prefix TEXT`: Tag prefix filter when locating previous release boundary.
 
 ## releasecraft changelog
 
@@ -56,4 +70,22 @@ releasecraft changelog [OPTIONS] [REPO_PATH]
 
 - `--output PATH`, `-o`: File path for the changelog (default: `CHANGELOG.md`).
 - `--version TEXT`: Explicit version header to write.
-- `--unreleased`: Generates an `## [Unreleased]` section.
+- `--path TEXT`: Filter commits by directory path.
+- `--highlights / --no-highlights`: Include executive highlights block.
+
+## releasecraft hook
+
+Manages Git repository hooks to ensure every commit adheres to Conventional Commits rules at commit time.
+
+### Subcommands
+
+```bash
+# Install commit-msg hook
+releasecraft hook install [REPO_PATH]
+
+# Uninstall commit-msg hook
+releasecraft hook uninstall [REPO_PATH]
+
+# Validate commit message file directly (invoked by hook)
+releasecraft hook check-msg <COMMIT_MSG_FILE>
+```
