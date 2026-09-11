@@ -1,51 +1,106 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
   <defs>
+    <!-- Squircle Clip -->
     <clipPath id="squircle-clip">
       <rect x="24" y="24" width="976" height="976" rx="220" />
     </clipPath>
 
+    <!-- Luxury Multi-Stage Drop Shadow -->
+    <filter id="luxury-shadow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#020617" flood-opacity="0.4" />
+    </filter>
+
+    <filter id="cyan-bloom" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="7" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Gradients -->
+    <linearGradient id="squircle-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+
+    <!-- Deep Obsidian Gateway Interior -->
+    <radialGradient id="hex-interior" cx="48%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+
+    <linearGradient id="gate-rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <!-- Electric Cyan Vector Beam -->
     <linearGradient id="cyan-glow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00f5ff"/>
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="45%" stop-color="#00f5ff"/>
       <stop offset="100%" stop-color="#0284c7"/>
     </linearGradient>
 
-    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fbbf24"/>
-      <stop offset="100%" stop-color="#d97706"/>
+    <!-- Warm Amber Gold for Beak, Orbital Ring & SemVer Seal -->
+    <linearGradient id="gold-bright" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="35%" stop-color="#fbbf24"/>
+      <stop offset="85%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#b45309"/>
     </linearGradient>
 
-    <linearGradient id="facet-light" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#475569"/>
+    <linearGradient id="gold-shadow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="60%" stop-color="#b45309"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+
+    <!-- High-Contrast Swiss Geometric Facets -->
+    <linearGradient id="f-apex" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+
+    <linearGradient id="f-highlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </linearGradient>
+
+    <linearGradient id="f-steel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+
+    <linearGradient id="f-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#64748b"/>
       <stop offset="100%" stop-color="#334155"/>
     </linearGradient>
 
-    <linearGradient id="facet-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="f-slate" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#334155"/>
       <stop offset="100%" stop-color="#1e293b"/>
     </linearGradient>
 
-    <linearGradient id="facet-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="f-dark" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#1e293b"/>
       <stop offset="100%" stop-color="#0f172a"/>
     </linearGradient>
 
-    <linearGradient id="facet-deep" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="f-deep" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#080c14"/>
+      <stop offset="100%" stop-color="#020617"/>
     </linearGradient>
-
-    <filter id="subtle-shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.14" />
-    </filter>
   </defs>
 
   <!-- 1. Luxury White Squircle Container -->
-  <rect x="24" y="24" width="976" height="976" rx="220" fill="#ffffff" stroke="#e2e8f0" stroke-width="6" />
+  <rect x="24" y="24" width="976" height="976" rx="220" fill="url(#squircle-bg)" stroke="#e2e8f0" stroke-width="6" />
+  <rect x="36" y="36" width="952" height="952" rx="210" fill="none" stroke="#f1f5f9" stroke-width="2" />
 
   <g clip-path="url(#squircle-clip)">
-    <g transform="translate(512, 512)" filter="url(#subtle-shadow)">
+    <!-- Central Composition (Centered at 512, 512) -->
+    <g transform="translate(512, 512)" filter="url(#luxury-shadow)">
 
-      <!-- 2. Massive Hexagonal Architectural Gateway -->
+      <!-- 2. Hexagonal Architectural Gateway Frame -->
       <polygon points="
         0,-390
         338,-195
@@ -53,110 +108,136 @@
         0,390
         -338,195
         -338,-195
-      " fill="none" stroke="#0f172a" stroke-width="36" stroke-linejoin="round" />
+      " fill="url(#hex-interior)" stroke="url(#gate-rim)" stroke-width="32" stroke-linejoin="round" />
 
+      <!-- Inner Hexagonal Guideline -->
       <polygon points="
-        0,-355
-        307,-177
-        307,177
-        0,355
-        -307,177
-        -307,-177
-      " fill="none" stroke="#00f5ff" stroke-width="4" opacity="0.45" stroke-dasharray="16, 12" />
+        0,-352
+        305,-176
+        305,176
+        0,352
+        -305,176
+        -305,-176
+      " fill="none" stroke="url(#cyan-glow)" stroke-width="3.5" opacity="0.38" stroke-dasharray="14, 10" />
 
-      <!-- 3. The 85% Mass Symmetrical Falcon / Raptor Mascot -->
+      <!-- Geometric Crosshairs -->
+      <line x1="0" y1="-350" x2="0" y2="350" stroke="#334155" stroke-width="1.5" opacity="0.35" />
+      <line x1="-300" y1="0" x2="300" y2="0" stroke="#334155" stroke-width="1.5" opacity="0.35" />
 
-      <!-- Outer Wing Mantle (Wingspan) -->
-      <!-- Left Outer Wing -->
-      <polygon points="0,-160 -120,-110 -240,-10 -280,120 -200,100 -120,60 0,120" fill="url(#facet-mid)" />
-      <polygon points="-120,-110 -240,-10 -210,60 -120,60" fill="url(#facet-light)" />
-      <polygon points="-240,-10 -280,120 -230,130 -200,100" fill="url(#facet-mid)" />
+      <!-- ================= 3. MONUMENTAL PEREGRINE FALCON HEAD EMBLEM ================= -->
 
-      <!-- Right Outer Wing (Mirror with shadow tones) -->
-      <polygon points="0,-160 120,-110 240,-10 280,120 200,100 120,60 0,120" fill="url(#facet-dark)" />
-      <polygon points="120,-110 240,-10 210,60 120,60" fill="url(#facet-mid)" />
-      <polygon points="240,-10 280,120 230,130 200,100" fill="url(#facet-deep)" />
+      <!-- Aerodynamic Occipital Crest Plumes (Sharp, Swept Back) -->
+      <!-- Top Plume 1 -->
+      <polygon points="-50,-150 -160,-190 -110,-110" fill="url(#f-apex)" />
+      <!-- Mid Plume 2 -->
+      <polygon points="-110,-110 -210,-120 -150,-30" fill="url(#f-steel)" />
+      <!-- Lower Plume 3 -->
+      <polygon points="-150,-30 -230,-20 -160,60" fill="url(#f-mid)" />
+      <!-- Nape Base Plume 4 -->
+      <polygon points="-160,60 -210,70 -130,150" fill="url(#f-slate)" />
 
-      <!-- Wing Flight Feathers Tier 2 -->
-      <polygon points="-200,100 -230,130 -160,200 -120,130" fill="url(#facet-dark)" />
-      <polygon points="200,100 230,130 160,200 120,130" fill="url(#facet-deep)" />
+      <!-- Crest Cyan Laser Edge Highlights -->
+      <polyline points="-50,-150 -160,-190 -110,-110 -210,-120 -150,-30 -230,-20 -160,60 -210,70 -130,150" fill="none" stroke="url(#cyan-glow)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
-      <!-- Cyan Wing Accent Contours -->
-      <path d="M -120,-110 L -240,-10 L -280,120" fill="none" stroke="#00f5ff" stroke-width="4" opacity="0.8" stroke-linejoin="round" />
-      <path d="M 120,-110 L 240,-10 L 280,120" fill="none" stroke="#00f5ff" stroke-width="4" opacity="0.8" stroke-linejoin="round" />
+      <!-- Skull Dome & Forehead Crown (Aerodynamic Raptor Hood) -->
+      <polygon points="-50,-150 70,-195 150,-130 50,-95" fill="url(#f-apex)" />
+      <polygon points="-50,-150 50,-95 -110,-110" fill="url(#f-steel)" />
 
-      <!-- Breast Armor Plates (Chevron Pattern) -->
-      <polygon points="0,-70 -90,-20 -50,60 0,90" fill="url(#facet-light)" />
-      <polygon points="0,-70 90,-20 50,60 0,90" fill="url(#facet-dark)" />
+      <!-- Forehead Specular Highlight -->
+      <polygon points="-10,-175 70,-195 130,-140 40,-125" fill="#ffffff" opacity="0.75" />
 
-      <polygon points="0,90 -50,60 -70,140 0,180" fill="url(#facet-mid)" />
-      <polygon points="0,90 50,60 70,140 0,180" fill="url(#facet-deep)" />
+      <!-- Severe Raptor Eyebrow Ridge (Overhanging, Piercing Focus) -->
+      <polygon points="50,-125 150,-130 185,-105 110,-95 40,-105" fill="#0f172a" />
+      <polyline points="40,-105 150,-130 185,-105" fill="none" stroke="#cbd5e1" stroke-width="2.5" />
 
-      <!-- Center Breast Energy Inset -->
-      <polygon points="0,-20 -30,20 0,50 30,20" fill="url(#cyan-glow)" />
+      <!-- Peregrine Malar Mustache (Iconic Black Raptor Cheek Mask) -->
+      <polygon points="40,-105 110,-95 130,-30 65,0 15,-30" fill="#020617" />
+      <polygon points="65,0 130,-30 155,0 90,45" fill="#090d16" />
 
-      <!-- Head Crest Feathers -->
-      <polygon points="0,-280 -45,-210 -15,-200" fill="url(#facet-light)" />
-      <polygon points="0,-280 45,-210 15,-200" fill="url(#facet-dark)" />
-      <polygon points="-45,-210 -75,-160 -40,-160" fill="url(#facet-mid)" />
-      <polygon points="45,-210 75,-160 40,-160" fill="url(#facet-deep)" />
+      <!-- Throat & Muscular Neck Mantle -->
+      <polygon points="-110,-110 50,-95 15,-30 -150,-30" fill="url(#f-steel)" />
+      <polygon points="-150,-30 15,-30 90,45 35,120 -80,70" fill="url(#f-mid)" />
+      <polygon points="-80,70 35,120 65,190 -15,220 -130,150" fill="url(#f-slate)" />
 
-      <!-- Head / Skull Plates -->
-      <polygon points="0,-230 -60,-170 0,-130" fill="#f8fafc" />
-      <polygon points="0,-230 60,-170 0,-130" fill="#cbd5e1" />
+      <!-- Laser Seam Accents along Neck Plates -->
+      <line x1="15" y1="-30" x2="90" y2="45" stroke="#00f5ff" stroke-width="2.5" opacity="0.6" />
+      <line x1="35" y1="120" x2="65" y2="190" stroke="#00f5ff" stroke-width="2.5" opacity="0.6" />
 
-      <!-- Mask / Brow Facets (Obsidian Helmet) -->
-      <polygon points="0,-200 -55,-160 -35,-140 0,-150" fill="#0f172a" />
-      <polygon points="0,-200 55,-160 35,-140 0,-150" fill="#090d16" />
+      <!-- PIERCING CYAN RAPTOR OPTICS (Falcon Eye) -->
+      <!-- Golden Orbital Eye Ring -->
+      <ellipse cx="115" cy="-90" rx="20" ry="15" fill="url(#gold-bright)" transform="rotate(-6, 115, -90)" />
+      <!-- Obsidian Eye Cavity -->
+      <ellipse cx="115" cy="-90" rx="15" ry="11" fill="#020617" transform="rotate(-6, 115, -90)" />
+      <!-- Glowing Electric Cyan Iris -->
+      <circle cx="115" cy="-90" r="8" fill="#00f5ff" filter="url(#cyan-bloom)" />
+      <!-- Jet Black Pupil -->
+      <circle cx="116" cy="-90" r="4.8" fill="#020617" />
+      <!-- Star Catchlight Glint -->
+      <circle cx="119" cy="-93" r="2.2" fill="#ffffff" />
 
-      <!-- Electric Cyan Raptor Optics (Eyes) -->
-      <polygon points="-48,-160 -25,-155 -32,-145 -52,-150" fill="#00f5ff" />
-      <circle cx="-38" cy="-153" r="3" fill="#ffffff" />
+      <!-- ================= MASSIVE HOOKED PREDATOR BEAK ================= -->
+      <!-- Cere: Golden base of the beak with nostril -->
+      <polygon points="150,-130 185,-105 160,-70 130,-70 140,-95" fill="url(#gold-bright)" />
+      <ellipse cx="158" cy="-88" rx="3.5" ry="2.5" fill="#78350f" transform="rotate(-15, 158, -88)" />
 
-      <polygon points="48,-160 25,-155 32,-145 52,-150" fill="#00f5ff" />
-      <circle cx="38" cy="-153" r="3" fill="#ffffff" />
+      <!-- Hooked Upper Mandible (Sharp, Dominant, Graceful Curve) -->
+      <path d="
+        M 185,-105
+        Q 255,-80 275,-25
+        Q 270,20 242,48
+        Q 238,25 218,8
+        L 190,-15
+        L 160,-70
+        Z
+      " fill="url(#gold-bright)" />
 
-      <!-- Golden Hooked Beak (Tomium & Tip) -->
-      <polygon points="0,-145 -24,-135 0,-70" fill="url(#gold-grad)" />
-      <polygon points="0,-145 24,-135 0,-70" fill="#b45309" />
-      <polygon points="0,-100 -12,-110 0,-70" fill="#fef08a" opacity="0.6" />
+      <!-- Beak Razor Ridge Light Highlight -->
+      <path d="
+        M 185,-105
+        Q 251,-82 270,-27
+      " fill="none" stroke="#fffbeb" stroke-width="4.5" stroke-linecap="round" />
 
-      <!-- 4. Geometric SemVer Release Ring / Hex Seal clutched by Talons -->
-      <g transform="translate(0, 240)">
-        <!-- Outer Golden Release Hex Ring -->
+      <!-- Lower Mandible & Tomial Tooth -->
+      <polygon points="160,-70 190,-15 218,8 175,8 145,0" fill="url(#gold-shadow)" />
+      <polygon points="218,8 230,-2 208,2" fill="#78350f" />
+
+      <!-- Mouthline Shadow Cut -->
+      <line x1="160" y1="-70" x2="218" y2="8" stroke="#451a03" stroke-width="2.5" />
+
+      <!-- ================= 4. GOLDEN SEMVER RELEASE RING (SEAL OF AUTHORITY) ================= -->
+      <g transform="translate(145, 185)">
+        <!-- Outer Glowing Release Hexagon Seal -->
         <polygon points="
-          0,-80
-          70,-40
-          70,40
-          0,80
-          -70,40
-          -70,-40
-        " fill="#0f172a" stroke="url(#gold-grad)" stroke-width="12" stroke-linejoin="round" />
+          0,-85
+          74,-42.5
+          74,42.5
+          0,85
+          -74,42.5
+          -74,-42.5
+        " fill="#0b0f19" stroke="url(#gold-bright)" stroke-width="14" stroke-linejoin="round" />
 
-        <!-- Inner Hex Ring Accent -->
+        <!-- Inner Hexagon Frame -->
         <polygon points="
-          0,-55
-          48,-28
-          48,28
-          0,55
-          -48,28
-          -48,-28
-        " fill="none" stroke="#00f5ff" stroke-width="3.5" stroke-dasharray="8,6" />
+          0,-62
+          54,-31
+          54,31
+          0,62
+          -54,31
+          -54,-31
+        " fill="#020617" stroke="#334155" stroke-width="3.5" stroke-linejoin="round" />
 
-        <!-- Luminous SemVer Core Diamond -->
-        <polygon points="0,-22 22,0 0,22 -22,0" fill="url(#gold-grad)" />
+        <!-- SemVer Trinity Segments (MAJOR - MINOR - PATCH) -->
+        <!-- Top Chevron: MAJOR (Amber Gold) -->
+        <polygon points="0,-48 30,-14 0,-24 -30,-14" fill="url(#gold-bright)" />
+        <!-- Right Wing: MINOR (Electric Cyan) -->
+        <polygon points="38,4 38,38 8,20" fill="url(#cyan-glow)" />
+        <!-- Left Wing: PATCH (Platinum Steel) -->
+        <polygon points="-38,4 -38,38 -8,20" fill="url(#f-apex)" />
+
+        <!-- Core Pulse Dot -->
+        <circle cx="0" cy="0" r="7" fill="#00f5ff" />
+        <circle cx="0" cy="0" r="3" fill="#ffffff" />
       </g>
-
-      <!-- Razor Talons Grasping the Ring -->
-      <!-- Left Talon Claws -->
-      <path d="M -45,160 L -50,195 L -62,190" fill="none" stroke="url(#gold-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M -30,165 L -35,205 L -45,200" fill="none" stroke="url(#gold-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M -15,170 L -18,205 L -26,202" fill="none" stroke="url(#gold-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
-
-      <!-- Right Talon Claws -->
-      <path d="M 45,160 L 50,195 L 62,190" fill="none" stroke="url(#gold-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M 30,165 L 35,205 L 45,200" fill="none" stroke="url(#gold-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M 15,170 L 18,205 L 26,202" fill="none" stroke="url(#gold-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
 
     </g>
   </g>
