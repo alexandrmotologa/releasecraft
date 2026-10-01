@@ -29,75 +29,75 @@ def get_demo_commits() -> list[ParsedCommit]:
     sample_data = [
         (
             "7a8b9c0",
-            "feat(manifest): add multi-ecosystem version synchronizer for pyproject, package.json, and cargo",
+            "feat(manifest): support composer, pubspec, setup.cfg, and version.go manifests",
             "feat",
             "manifest",
             False,
             False,
-            "Adds automated parsing and synchronized bumping for pyproject.toml, package.json, Cargo.toml, and __init__.py files with atomic rollback protection.",
+            "Adds automated parsing and synchronized bumping for composer.json, pubspec.yaml, setup.cfg, version.go, pyproject.toml, package.json, and Cargo.toml.",
         ),
         (
             "1c2d3e4",
-            "feat(hooks): provide native git commit-msg hook installer and validator",
+            "feat(cli): add init command for configuration scaffolding and git hook setup",
             "feat",
-            "hooks",
+            "cli",
             False,
             False,
-            "Enforces Conventional Commits 1.0.0 directly during git commit workflows with informative colorized diagnostic feedback.",
+            "Scaffolds default .releasecraft.yaml and installs native commit-msg hooks with interactive or non-interactive flags.",
         ),
         (
             "5f6a7b8",
-            "feat(publisher): dispatch webhooks to discord, slack, and custom endpoints",
+            "feat(semver): support zero-semver v0 mode for initial development iterations",
             "feat",
-            "publisher",
+            "semver",
             False,
             False,
-            "Notifies developer and user channels upon release creation with rich embeds and changelog summaries.",
+            "Enables --v0 mode where breaking changes bump minor (0.x -> 0.y) and features bump patch (0.x.y -> 0.x.z).",
         ),
         (
             "9d0e1f2",
-            "feat(publisher): upload release assets and generate sha256 checksums",
+            "feat(publisher): multi-forge release publishing for GitHub, GitLab, and Gitea",
             "feat",
             "publisher",
             False,
             False,
-            "Automatically computes SHA256SUMS file and attaches distribution wheels, binaries, and tarballs to GitHub, GitLab, and Gitea releases.",
+            "Seamlessly detects remote forges and credentials to publish releases and upload binary assets with streaming I/O.",
         ),
         (
             "3b4c5d6",
-            "perf(scanner): cache tag lookup and tree diffing for massive monorepos",
+            "perf(scanner): verify branch ancestry to filter unreachable semver tags",
             "perf",
             "scanner",
             False,
             False,
-            "Reduces git log traversal latency by 68% when calculating paths and tag ranges in repositories with over 50,000 commits.",
+            "Excludes tags from unmerged parallel branches using git ancestry verification before computing version boundaries.",
         ),
         (
             "8e9f0a1",
-            "fix(tui): resolve keybinding clash between search filter and quick shortcuts",
+            "fix(tui): reset breaking flag on reclassification and guard UI lifecycle",
             "fix",
             "tui",
             False,
             False,
-            "Ensures search input correctly claims focus on slash key while retaining p, e, m shortcuts when selection list is active.",
+            "Ensures commit is_breaking state is properly cleaned up when changing types and guards preview mount lifecycle.",
         ),
         (
             "4a5b6c7",
-            "docs(readme): enrich architectural guide and visual workflows",
-            "docs",
-            "readme",
+            "fix(changelog): prevent duplicate breaking feats and preserve unreleased block",
+            "fix",
+            "changelog",
             False,
             False,
-            "Documents full CLI commands, TUI interactive flows, and multi-forge CI/CD automation templates.",
+            "Positions release entries accurately beneath [Unreleased] headers and keeps breaking commits exclusive to Breaking Changes.",
         ),
         (
             "2e3f4a5",
-            "feat(api)!: transition to async release publisher pipeline",
+            "feat(api)!: transition to unified multi-forge release provider pipeline",
             "feat",
             "api",
             True,
             True,
-            "BREAKING CHANGE: Synchronous publisher functions are deprecated in favor of asynchronous provider handlers.",
+            "BREAKING CHANGE: Synchronous publisher functions are deprecated in favor of unified ReleaseProvider handlers.",
         ),
     ]
 
@@ -164,7 +164,7 @@ def capture_cli_preview_screenshot(commits: list[ParsedCommit], output_path: Pat
         f"[bold]Current Version:[/bold] v{current_ver}\n"
         f"[bold]Next Version:[/bold] [bold green]v{next_ver}[/bold green] "
         f"([bold cyan]MAJOR[/bold cyan] bump across {len(commits)} unreleased commits)\n"
-        f"[dim]Forge Provider: GitHub (alexandrmotologa/releasecraft) | Manifests: pyproject.toml[/dim]"
+        f"[dim]Forge Provider: GitHub (alexandrmotologa/releasecraft) | Manifests: pyproject.toml, package.json, composer.json[/dim]"
     )
     console.print(Panel(panel_text, title="ReleaseCraft Release Preview", border_style="cyan"))
 

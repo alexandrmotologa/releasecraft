@@ -1,6 +1,25 @@
 const fs = require('fs');
 const path = require('path');
-const { Resvg } = require(path.resolve(__dirname, '../../node_modules/@resvg/resvg-js'));
+function loadResvg() {
+  const candidatePaths = [
+    path.resolve(__dirname, '../../node_modules/@resvg/resvg-js'),
+    path.resolve(__dirname, '../node_modules/@resvg/resvg-js'),
+    '@resvg/resvg-js',
+    'C:/Users/alexander/.gemini/antigravity-ide/brain/911f2964-52f7-4a09-81cb-33cea93c56bc/scratch/node_modules/@resvg/resvg-js',
+  ];
+
+  for (const candidate of candidatePaths) {
+    try {
+      const mod = require(candidate);
+      return mod.Resvg || mod;
+    } catch {
+      // try next
+    }
+  }
+  throw new Error('Could not find @resvg/resvg-js in any candidate path.');
+}
+
+const Resvg = loadResvg();
 
 const images = [
   { svg: 'tui_screenshot.svg', png: 'tui_screenshot.png', width: 1600 },
