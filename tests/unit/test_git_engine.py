@@ -67,6 +67,41 @@ def test_repo_scanner_with_semver_tags(synthetic_repo: git.Repo, tmp_path: Path)
     assert version.patch == 0
 
 
+def test_repo_scanner_ignores_unreachable_branch_tags(
+    synthetic_repo: git.Repo, tmp_path: Path
+) -> None:
+    """Verify RepoScanner ignores tags created on unmerged feature branches."""
+    # Commit on main with v1.0.0
+    f = tmp_path / "main.txt"
+    f.write_text("main v1", encoding="utf-8")
+    synthetic_repo.index.add([str(f)])
+    c1 = synthetic_repo.index.commit("chore: commit on main")
+    synthetic_repo.create_tag("v1.0.0", ref=c1)
+
+    # Create and checkout feature branch
+    feat_branch = synthetic_repo.create_head("feature/v2")
+    feat_branch.checkout()
+
+    f.write_text("feature v2", encoding="utf-8")
+    synthetic_repo.index.add([str(f)])
+    c2 = synthetic_repo.index.commit("feat!: breaking change on feature branch")
+    synthetic_repo.create_tag("v2.0.0", ref=c2)
+
+    # Switch back to main
+    synthetic_repo.heads.master.checkout() if "master" in synthetic_repo.heads else synthetic_repo.heads[
+        0
+    ].checkout()
+
+    scanner = RepoScanner(tmp_path)
+    tag, version = scanner.get_latest_semver_tag()
+
+    # The highest tag on main should be v1.0.0, NOT the unmerged v2.0.0
+    assert tag == "v1.0.0"
+    assert version is not None
+    assert version.major == 1
+    assert version.minor == 0
+
+
 def test_log_walker_fetches_range(synthetic_repo: git.Repo, tmp_path: Path) -> None:
     """Verify LogWalker correctly retrieves commits between a base tag and HEAD."""
     file1 = tmp_path / "app.py"

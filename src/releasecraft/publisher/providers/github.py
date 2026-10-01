@@ -43,7 +43,12 @@ class GitHubProvider(ReleaseProvider):
                         token=self.client.token,
                         asset_path=asset_file,
                     )
-                except Exception:
-                    pass
+                except Exception as ex:
+                    import sys
+
+                    print(
+                        f"Warning: Failed to upload release asset {asset_file.name}: {ex}",
+                        file=sys.stderr,
+                    )
 
         return release_data

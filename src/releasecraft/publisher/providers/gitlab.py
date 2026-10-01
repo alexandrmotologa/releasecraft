@@ -1,5 +1,6 @@
 """GitLab Releases API provider."""
 
+import os
 import urllib.parse
 from pathlib import Path
 from typing import Any
@@ -14,11 +15,11 @@ class GitLabProvider(ReleaseProvider):
 
     def __init__(
         self,
-        token: str,
-        project_id: str,
+        token: str | None = None,
+        project_id: str = "",
         base_url: str = "https://gitlab.com",
     ) -> None:
-        self.token = token
+        self.token = token or os.getenv("GITLAB_TOKEN") or os.getenv("GL_TOKEN") or ""
         self.project_id = urllib.parse.quote(project_id, safe="")
         self.base_url = base_url.rstrip("/")
 

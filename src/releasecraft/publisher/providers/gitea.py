@@ -1,5 +1,6 @@
 """Gitea and Forgejo Releases API provider."""
 
+import os
 from pathlib import Path
 from typing import Any
 
@@ -13,11 +14,11 @@ class GiteaProvider(ReleaseProvider):
 
     def __init__(
         self,
-        token: str,
-        repo: str,
+        token: str | None = None,
+        repo: str = "",
         base_url: str = "https://gitea.com",
     ) -> None:
-        self.token = token
+        self.token = token or os.getenv("GITEA_TOKEN") or os.getenv("FORGEJO_TOKEN") or ""
         self.repo = repo.strip("/")
         self.base_url = base_url.rstrip("/")
 

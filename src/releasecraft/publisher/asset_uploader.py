@@ -67,11 +67,12 @@ class AssetUploader:
             "Authorization": f"Bearer {token}",
             "Content-Type": content_type,
             "User-Agent": "ReleaseCraft",
+            "Content-Length": str(asset_path.stat().st_size),
         }
 
         with open(asset_path, "rb") as data:
-            with httpx.Client(timeout=60.0) as client:
-                resp = client.post(url, headers=headers, content=data.read())
+            with httpx.Client(timeout=120.0) as client:
+                resp = client.post(url, headers=headers, content=data)
                 if resp.status_code in (200, 201):
                     return resp.json()
                 raise RuntimeError(

@@ -52,10 +52,16 @@ class GitPusher:
         remote = self.repo.remotes[self.remote_name]
 
         # Push branch
-        remote.push(refspec=f"{target_branch}:{target_branch}")
+        branch_push = remote.push(refspec=f"{target_branch}:{target_branch}")
+        for info in branch_push:
+            if info.flags & (git.PushInfo.ERROR | git.PushInfo.REJECTED):
+                raise RuntimeError(f"Git push for branch '{target_branch}' failed: {info.summary}")
 
         # Push tag if specified
         if tag_name:
-            remote.push(refspec=f"refs/tags/{tag_name}:refs/tags/{tag_name}")
+            tag_push = remote.push(refspec=f"refs/tags/{tag_name}:refs/tags/{tag_name}")
+            for info in tag_push:
+                if info.flags & (git.PushInfo.ERROR | git.PushInfo.REJECTED):
+                    raise RuntimeError(f"Git push for tag '{tag_name}' failed: {info.summary}")
 
         return actions

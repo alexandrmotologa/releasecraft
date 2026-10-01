@@ -41,10 +41,24 @@ class RepoScanner:
         """
         valid_tags: list[tuple[semver.Version, str]] = []
 
+        head_commit = None
+        try:
+            head_commit = self.repo.head.commit
+        except Exception:
+            pass
+
         for tag in self.repo.tags:
             tag_name = tag.name
             if tag_prefix and not tag_name.startswith(tag_prefix):
                 continue
+
+            if head_commit is not None:
+                try:
+                    tag_commit = tag.commit
+                    if not self.repo.is_ancestor(tag_commit, head_commit):
+                        continue
+                except Exception:
+                    pass
 
             target_version_str = tag_name[len(tag_prefix) :] if tag_prefix else tag_name
             match = SEMVER_REGEX.match(target_version_str)
