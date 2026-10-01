@@ -98,3 +98,31 @@ def test_changelog_updater_prepending(tmp_path: Path) -> None:
     assert pos_old != -1
     # Ensure new release comes before old release
     assert pos_new < pos_old
+
+
+def test_changelog_updater_with_unreleased_section(tmp_path: Path) -> None:
+    changelog_file = tmp_path / "CHANGELOG.md"
+    initial_content = (
+        "# Changelog\n\n"
+        "## [Unreleased]\n\n"
+        "- unreleased WIP work\n\n"
+        "## [1.0.0] - 2026-08-01\n\n"
+        "### 🚀 Features\n- old feature\n"
+    )
+    changelog_file.write_text(initial_content, encoding="utf-8")
+
+    new_release_md = "## [1.1.0] - 2026-09-11\n\n### 🚀 Features\n- new feature"
+
+    updated = ChangelogUpdater.update_file(changelog_file, new_release_md)
+    assert updated is True
+
+    updated_content = changelog_file.read_text(encoding="utf-8")
+    pos_unreleased = updated_content.find("## [Unreleased]")
+    pos_new = updated_content.find("## [1.1.0]")
+    pos_old = updated_content.find("## [1.0.0]")
+
+    assert pos_unreleased != -1
+    assert pos_new != -1
+    assert pos_old != -1
+    # Verify proper order: Unreleased stays at top, new release is middle, old release is bottom
+    assert pos_unreleased < pos_new < pos_old

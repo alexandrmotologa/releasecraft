@@ -49,9 +49,7 @@ class ChangelogBuilder:
                 continue
 
             sec_commits = [
-                c
-                for c in active
-                if c.type.lower() == sec.type.lower() and not (c.is_breaking and sec.type != "feat")
+                c for c in active if c.type.lower() == sec.type.lower() and not c.is_breaking
             ]
 
             if sec_commits:
@@ -109,6 +107,7 @@ class ChangelogBuilder:
             date_str=date_str,
             github_repo=self.enricher.github_repo,
             prev_version=prev_version,
+            tag_template=self.config.tag_format,
         )
         lines.append(header)
         lines.append("")

@@ -15,6 +15,7 @@ class ChangelogTemplate:
         date_str: str | None = None,
         github_repo: str | None = None,
         prev_version: SemVerInfo | None = None,
+        tag_template: str = "v{version}",
     ) -> str:
         """Render the H2 version header with date and optional comparison link."""
         if not date_str:
@@ -22,7 +23,9 @@ class ChangelogTemplate:
 
         v_str = str(version)
         if github_repo and prev_version:
-            compare_url = f"https://github.com/{github_repo}/compare/v{prev_version}...v{v_str}"
+            curr_tag = tag_template.format(version=str(version))
+            prev_tag = tag_template.format(version=str(prev_version))
+            compare_url = f"https://github.com/{github_repo}/compare/{prev_tag}...{curr_tag}"
             return f"## [{v_str}]({compare_url}) - {date_str}"
 
         return f"## [{v_str}] - {date_str}"

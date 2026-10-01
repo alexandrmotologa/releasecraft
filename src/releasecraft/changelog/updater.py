@@ -11,7 +11,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 """
 
-VERSION_HEADING_REGEX = re.compile(r"^##\s+\[(?P<version>[^\]]+)\]", re.MULTILINE)
+VERSION_HEADING_REGEX = re.compile(
+    r"^##\s+\[(?P<version>(?!Unreleased\b)[^\]]+)\]",
+    re.IGNORECASE | re.MULTILINE,
+)
+UNRELEASED_HEADING_REGEX = re.compile(
+    r"^##\s+\[Unreleased\]",
+    re.IGNORECASE | re.MULTILINE,
+)
 
 
 class ChangelogUpdater:
@@ -44,7 +51,7 @@ class ChangelogUpdater:
             # Already updated
             return False
 
-        # Find the first release section (## [version])
+        # Find the first release version section (excluding [Unreleased])
         match = VERSION_HEADING_REGEX.search(existing_content)
 
         if match:
@@ -57,8 +64,20 @@ class ChangelogUpdater:
                 + existing_content[insert_pos:].lstrip()
             )
         else:
-            # No prior version headers found, append after preamble or at top
-            if "# Changelog" in existing_content:
+            # Check if there is an [Unreleased] header to insert below
+            unreleased_match = UNRELEASED_HEADING_REGEX.search(existing_content)
+            if unreleased_match:
+                # Find end of the line containing ## [Unreleased]
+                newline_pos = existing_content.find("\n", unreleased_match.end())
+                insert_pos = newline_pos + 1 if newline_pos != -1 else len(existing_content)
+                new_content = (
+                    existing_content[:insert_pos].rstrip()
+                    + "\n\n"
+                    + release_markdown.strip()
+                    + "\n\n"
+                    + existing_content[insert_pos:].lstrip()
+                )
+            elif "# Changelog" in existing_content:
                 header_pos = existing_content.find("# Changelog")
                 # Find end of header line
                 next_newline = existing_content.find("\n\n", header_pos)
