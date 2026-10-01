@@ -84,3 +84,25 @@ async def test_tui_app_filter_and_quit() -> None:
 async def test_edit_commit_modal() -> None:
     modal = EditCommitModal("initial subject")
     assert modal.initial_text == "initial subject"
+
+
+@pytest.mark.asyncio
+async def test_reclassify_resets_is_breaking() -> None:
+    commit = make_parsed_commit("feat!: breaking change")
+    assert commit.is_breaking is True
+
+    app = ReleaseCraftApp(
+        current_version=SemVerInfo(major=1, minor=0, patch=0),
+        commits=[commit],
+        builder=ChangelogBuilder(),
+    )
+    async with app.run_test():
+        assert app.next_version.major == 2
+
+        # Reclassify to fix
+        commit.is_breaking = False
+        commit.type = "fix"
+        app._refresh_state()
+
+        assert commit.is_breaking is False
+        assert str(app.next_version) == "1.0.1"

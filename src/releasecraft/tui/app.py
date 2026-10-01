@@ -195,11 +195,13 @@ class ReleaseCraftApp(App):
         )
         self.current_markdown = new_md
 
-        self.preview_pane.update_content(new_md)
-        self.header_widget.current_version = self.current_version
-        self.header_widget.next_version = self.next_version
-        self.header_widget.bump_type = self.bump_type
-        self.header_widget.refresh()
+        if hasattr(self, "preview_pane"):
+            self.preview_pane.update_content(new_md)
+        if hasattr(self, "header_widget"):
+            self.header_widget.current_version = self.current_version
+            self.header_widget.next_version = self.next_version
+            self.header_widget.bump_type = self.bump_type
+            self.header_widget.refresh()
 
     def action_focus_search(self) -> None:
         """Focus the search filter input."""
@@ -234,6 +236,7 @@ class ReleaseCraftApp(App):
                 if new_type == "breaking":
                     commit.is_breaking = True
                 else:
+                    commit.is_breaking = False
                     commit.type = new_type
                 self._populate_selections()
                 self._refresh_state()
