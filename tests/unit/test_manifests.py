@@ -62,11 +62,26 @@ def test_detect_and_update_all(tmp_path: Path) -> None:
     (tmp_path / "pyproject.toml").write_text('[project]\nversion = "1.0.0"\n', encoding="utf-8")
     (tmp_path / "package.json").write_text('{"version": "1.0.0"}', encoding="utf-8")
     (tmp_path / "VERSION").write_text("1.0.0\n", encoding="utf-8")
+    (tmp_path / "composer.json").write_text(
+        '{"name": "test/app", "version": "1.0.0"}', encoding="utf-8"
+    )
+    (tmp_path / "pubspec.yaml").write_text("name: demo\nversion: 1.0.0+1\n", encoding="utf-8")
+    (tmp_path / "setup.cfg").write_text(
+        "[metadata]\nname = demo\nversion = 1.0.0\n", encoding="utf-8"
+    )
+    (tmp_path / "version.go").write_text(
+        'package main\n\nconst Version = "1.0.0"\n', encoding="utf-8"
+    )
 
     manifests = ManifestUpdater.detect_manifests(tmp_path)
-    assert len(manifests) == 3
+    assert len(manifests) == 7
 
     updated_files = ManifestUpdater.update_all(tmp_path, "1.1.0")
-    assert len(updated_files) == 3
+    assert len(updated_files) == 7
 
     assert (tmp_path / "VERSION").read_text(encoding="utf-8").strip() == "1.1.0"
+    assert '"version": "1.1.0"' in (tmp_path / "composer.json").read_text(encoding="utf-8")
+    # Verify Flutter build number preserved
+    assert "version: 1.1.0+1" in (tmp_path / "pubspec.yaml").read_text(encoding="utf-8")
+    assert "version = 1.1.0" in (tmp_path / "setup.cfg").read_text(encoding="utf-8")
+    assert 'const Version = "1.1.0"' in (tmp_path / "version.go").read_text(encoding="utf-8")

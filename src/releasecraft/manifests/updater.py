@@ -19,6 +19,21 @@ PYTHON_INIT_VERSION_REGEX = re.compile(
     re.MULTILINE,
 )
 
+PUBSPEC_VERSION_REGEX = re.compile(
+    r'^(?P<prefix>\s*version:\s*["\']?)(?P<ver>[0-9]+\.[0-9]+\.[0-9]+(?:\+[-0-9a-zA-Z.]+)?)(?P<suffix>["\']?\s*)$',
+    re.MULTILINE,
+)
+
+SETUP_CFG_VERSION_REGEX = re.compile(
+    r"^(?P<prefix>\s*version\s*=\s*)(?P<ver>[^\r\n]+)",
+    re.MULTILINE,
+)
+
+GO_VERSION_REGEX = re.compile(
+    r'^(?P<prefix>\s*(?:const|var)\s+Version\s*=\s*["\'])(?P<ver>[^"\']+)(?P<suffix>["\'])',
+    re.MULTILINE,
+)
+
 
 class ManifestUpdater:
     """Synchronizes version numbers across common language manifest files."""
@@ -53,10 +68,42 @@ class ManifestUpdater:
             if CARGO_VERSION_REGEX.search(content):
                 manifests.append(cargo_toml)
 
-        # 4. VERSION file
+        # 4. composer.json
+        composer_json = root / "composer.json"
+        if composer_json.is_file():
+            try:
+                data = json.loads(composer_json.read_text(encoding="utf-8"))
+                if "version" in data:
+                    manifests.append(composer_json)
+            except Exception:
+                pass
+
+        # 5. pubspec.yaml
+        pubspec_yaml = root / "pubspec.yaml"
+        if pubspec_yaml.is_file():
+            content = pubspec_yaml.read_text(encoding="utf-8")
+            if PUBSPEC_VERSION_REGEX.search(content):
+                manifests.append(pubspec_yaml)
+
+        # 6. setup.cfg
+        setup_cfg = root / "setup.cfg"
+        if setup_cfg.is_file():
+            content = setup_cfg.read_text(encoding="utf-8")
+            if "[metadata]" in content and SETUP_CFG_VERSION_REGEX.search(content):
+                manifests.append(setup_cfg)
+
+        # 7. VERSION file
         version_file = root / "VERSION"
         if version_file.is_file():
             manifests.append(version_file)
+
+        # 8. version.go
+        for go_name in ["version.go", "version_info.go"]:
+            go_file = root / go_name
+            if go_file.is_file():
+                content = go_file.read_text(encoding="utf-8")
+                if GO_VERSION_REGEX.search(content):
+                    manifests.append(go_file)
 
         # 5. Python package __init__.py files
         search_dirs = [root / "src", root]
@@ -142,6 +189,62 @@ class ManifestUpdater:
                 if match.group("ver") == clean_version:
                     return False
                 new_content = PYTHON_INIT_VERSION_REGEX.sub(
+                    rf"\g<prefix>{clean_version}\g<suffix>",
+                    original_content,
+                    count=1,
+                )
+                path.write_text(new_content, encoding="utf-8")
+                return True
+
+        elif name == "composer.json":
+            try:
+                data = json.loads(original_content)
+                if data.get("version") == clean_version:
+                    return False
+                data["version"] = clean_version
+                new_content = json.dumps(data, indent=4) + "\n"
+                path.write_text(new_content, encoding="utf-8")
+                return True
+            except Exception:
+                return False
+
+        elif name == "pubspec.yaml":
+            match = PUBSPEC_VERSION_REGEX.search(original_content)
+            if match:
+                current_v = match.group("ver")
+                new_ver_val = clean_version
+                if "+" in current_v and "+" not in clean_version:
+                    build_part = current_v.split("+", 1)[1]
+                    new_ver_val = f"{clean_version}+{build_part}"
+                if current_v == new_ver_val:
+                    return False
+                new_content = PUBSPEC_VERSION_REGEX.sub(
+                    rf"\g<prefix>{new_ver_val}\g<suffix>",
+                    original_content,
+                    count=1,
+                )
+                path.write_text(new_content, encoding="utf-8")
+                return True
+
+        elif name == "setup.cfg":
+            match = SETUP_CFG_VERSION_REGEX.search(original_content)
+            if match:
+                if match.group("ver").strip() == clean_version:
+                    return False
+                new_content = SETUP_CFG_VERSION_REGEX.sub(
+                    rf"\g<prefix>{clean_version}",
+                    original_content,
+                    count=1,
+                )
+                path.write_text(new_content, encoding="utf-8")
+                return True
+
+        elif name.endswith(".go"):
+            match = GO_VERSION_REGEX.search(original_content)
+            if match:
+                if match.group("ver") == clean_version:
+                    return False
+                new_content = GO_VERSION_REGEX.sub(
                     rf"\g<prefix>{clean_version}\g<suffix>",
                     original_content,
                     count=1,
