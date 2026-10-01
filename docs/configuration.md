@@ -17,7 +17,14 @@ changelog_path: "CHANGELOG.md"
 # Git remote name. Default: "origin"
 remote: "origin"
 
-# Automatically synchronize version in pyproject.toml, package.json, Cargo.toml
+# Remote release provider: "github", "gitlab", or "gitea" (default: "github")
+provider: "github"
+
+# Enable Zero-Ver mode for initial 0.y.z development (breaking bumps minor, feat bumps patch)
+zero_semver: false
+
+# Automatically synchronize version across manifests:
+# pyproject.toml, package.json, Cargo.toml, composer.json, pubspec.yaml, setup.cfg, version.go, VERSION
 bump_manifests: true
 
 # Conventional commit section definitions

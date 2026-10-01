@@ -26,13 +26,15 @@ Once approved, ReleaseCraft prepends the formatted entry to `CHANGELOG.md`, bump
 - **Conventional commits parser**: Extracts type, scope, breaking changes markers (`!` or `BREAKING CHANGE:`), and footers from each commit message.
 - **Semantic version calculator**: Computes the next version bump according to SemVer 2.0.0 rules (major for breaking changes, minor for features, patch for fixes).
 - **Interactive terminal curation**: A Textual split-pane dashboard with commit toggles on the left, inline message editing (`e`), section reclassification (`m`), real-time search (`/`), and a live Markdown preview on the right.
-- **Manifest synchronization**: Automatically updates version declarations across `pyproject.toml`, `package.json`, `Cargo.toml`, and `VERSION` files.
-- **Git hooks**: Enforces Conventional Commits rules on `git commit` via `releasecraft hook install`.
-- **Release asset attachments**: Resolves and uploads distribution archives or binary wheels to GitHub Releases, generating matching `SHA256SUMS` manifests.
+- **Manifest synchronization**: Automatically updates version declarations across `pyproject.toml`, `package.json`, `Cargo.toml`, `composer.json`, `pubspec.yaml`, `setup.cfg`, `version.go`, and `VERSION` files.
+- **Multi-forge publishing**: Publishes releases and uploads assets to GitHub, GitLab, and Gitea with automatic provider discovery.
+- **Zero-Ver support**: Handles initial `0.y.z` development (`--v0` / `zero_semver: true`) where breaking changes bump minor and features bump patch.
+- **Git hooks**: Enforces Conventional Commits rules on `git commit` via `releasecraft hook install` or during `releasecraft init`.
+- **Release asset attachments**: Resolves and uploads distribution archives or binary wheels with streaming I/O, generating matching `SHA256SUMS` manifests.
 - **Monorepo support**: Restricts commit traversal by path or conventional scope (`--path packages/cli --tag-prefix cli-`).
 - **Release highlights**: Synthesizes breaking changes and primary features into an executive summary block.
 - **Webhook dispatching**: Notifies Discord, Slack, or custom webhooks upon release publication.
-- **Changelog updater**: Inserts the new release block beneath the top header in `CHANGELOG.md` while leaving previous release history intact.
+- **Changelog updater**: Inserts the new release block beneath the top header or `[Unreleased]` section in `CHANGELOG.md` while leaving previous release history intact.
 
 ## Screenshots
 
@@ -90,7 +92,15 @@ pip install .
 
 ## Quick start
 
-### 1. Preview the next release
+### 1. Initialize configuration and Git hooks
+
+Scaffold `.releasecraft.yaml` and install commit validation hooks in one command:
+
+```bash
+releasecraft init
+```
+
+### 2. Preview the next release
 
 Inspect unreleased commits and calculate the next version bump without modifying repository state:
 
@@ -120,7 +130,7 @@ To include an executive highlights block:
 releasecraft preview --highlights
 ```
 
-### 2. Install the Git commit-msg hook
+### 3. Install the Git commit-msg hook
 
 Ensure all team members write valid Conventional Commits locally:
 
@@ -130,7 +140,7 @@ releasecraft hook install
 
 When a developer runs `git commit`, ReleaseCraft checks the message format and rejects non-conforming messages before they enter the repository history.
 
-### 3. Validate commit conventions
+### 4. Validate commit conventions
 
 Check that all unreleased commits follow Conventional Commits formatting rules:
 
@@ -138,7 +148,7 @@ Check that all unreleased commits follow Conventional Commits formatting rules:
 releasecraft check
 ```
 
-### 4. Launch interactive release curation
+### 5. Launch interactive release curation
 
 Review and curate release notes in an interactive terminal user interface:
 
@@ -155,7 +165,7 @@ Keyboard controls in the TUI:
 - `p`: Approve and publish release
 - `q`: Cancel and exit
 
-### 5. Automated release with assets and manifest bump
+### 6. Automated release with assets and manifest bump
 
 Run an automated release that bumps `pyproject.toml`, updates `CHANGELOG.md`, attaches distribution assets, and notifies a webhook:
 

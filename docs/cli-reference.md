@@ -16,7 +16,9 @@ releasecraft release [OPTIONS] [REPO_PATH]
 - `--dry-run`: Computes the version bump and prints the changelog without creating git tags or calling external APIs.
 - `--bump [major|minor|patch|pre]`: Forces a specific version bump override instead of calculating it from commit history.
 - `--prerelease [alpha|beta|rc]`: Creates a pre-release version tag (such as `1.2.0-rc.1`).
-- `--bump-manifests / --no-bump-manifests`: Automatically synchronizes new versions into `pyproject.toml`, `package.json`, `Cargo.toml`, and `VERSION` (default: true).
+- `--bump-manifests / --no-bump-manifests`: Automatically synchronizes new versions into `pyproject.toml`, `package.json`, `Cargo.toml`, `composer.json`, `pubspec.yaml`, `setup.cfg`, `version.go`, and `VERSION` (default: true).
+- `--v0 / --zero-semver`: Enables Zero-Ver mode where breaking changes bump minor (0.x -> 0.y) and features bump patch.
+- `--provider [github|gitlab|gitea]`: Remote git forge provider for publishing releases (default: auto-detected from remote URL or token).
 - `--assets PATH`, `-a PATH`: Glob pattern for distribution assets to attach to the release (e.g. `dist/*.whl`).
 - `--generate-checksums / --no-checksums`: Generates a `SHA256SUMS` file alongside uploaded release assets (default: true).
 - `--highlights / --no-highlights`: Includes an executive highlights lead block summarizing breaking changes and top features.
@@ -40,6 +42,7 @@ releasecraft preview [OPTIONS] [REPO_PATH]
 ### Options
 
 - `--json`: Outputs the release metadata and changelog as a structured JSON object.
+- `--v0 / --zero-semver`: Enables Zero-Ver mode where breaking changes bump minor (0.x -> 0.y) and features bump patch.
 - `--include-all`: Includes chore and refactor commits that are excluded by default.
 - `--highlights / --no-highlights`: Includes executive highlights lead block.
 - `--path TEXT`: Filters commits by directory path.
@@ -89,3 +92,17 @@ releasecraft hook uninstall [REPO_PATH]
 # Validate commit message file directly (invoked by hook)
 releasecraft hook check-msg <COMMIT_MSG_FILE>
 ```
+
+## releasecraft init
+
+Initializes ReleaseCraft in the current repository by creating a default `.releasecraft.yaml` configuration file and optionally installing git commit-msg hooks.
+
+```bash
+releasecraft init [OPTIONS] [REPO_PATH]
+```
+
+### Options
+
+- `--hooks / --no-hooks`: Automatically installs git `commit-msg` hook (default: true).
+- `--force / --no-force`: Overwrites existing `.releasecraft.yaml` if already present.
+
