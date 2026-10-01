@@ -18,7 +18,7 @@
 
 ReleaseCraft is a local-first Git release manager. It analyzes commit history between the most recent version tag and the current working head, calculates the next semantic version according to Conventional Commits 1.0.0, and presents an interactive terminal interface where maintainers can curate release notes before committing them.
 
-Once approved, ReleaseCraft prepends the formatted entry to `CHANGELOG.md`, bumps version numbers in project manifest files (`pyproject.toml`, `package.json`, `Cargo.toml`), creates an annotated git tag, pushes to origin, uploads release assets, and publishes the release directly to GitHub.
+Once approved, ReleaseCraft prepends the formatted entry to `CHANGELOG.md`, bumps version numbers in project manifest files (`pyproject.toml`, `package.json`, `Cargo.toml`, `composer.json`, `pubspec.yaml`, `setup.cfg`, `version.go`, `VERSION`), creates an annotated git tag, pushes to origin, uploads release assets, and publishes the release directly to GitHub, GitLab, or Gitea.
 
 ## Core capabilities
 
