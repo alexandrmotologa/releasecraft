@@ -166,3 +166,40 @@ def test_cli_release_with_manifest_bump(repo_with_commits: git.Repo, tmp_path: P
     # Verify pyproject.toml was bumped to 1.1.0 and committed
     content = pyproject.read_text(encoding="utf-8")
     assert 'version = "1.1.0"' in content
+
+
+def test_cli_init_command(tmp_path: Path) -> None:
+    git.Repo.init(tmp_path)
+    res = runner.invoke(app, ["init", str(tmp_path)])
+    assert res.exit_code == 0
+    assert "Created configuration file" in res.stdout
+
+    config_file = tmp_path / ".releasecraft.yaml"
+    assert config_file.is_file()
+    content = config_file.read_text(encoding="utf-8")
+    assert "tag_format:" in content
+    assert "sections:" in content
+
+
+def test_cli_preview_v0(tmp_path: Path) -> None:
+    repo = git.Repo.init(tmp_path)
+    with repo.config_writer() as cfg:
+        cfg.set_value("user", "name", "Test")
+        cfg.set_value("user", "email", "test@example.com")
+
+    f = tmp_path / "app.txt"
+    f.write_text("v0", encoding="utf-8")
+    repo.index.add([str(f)])
+    c = repo.index.commit("chore: init")
+    repo.create_tag("v0.2.0", ref=c)
+
+    f.write_text("v1", encoding="utf-8")
+    repo.index.add([str(f)])
+    repo.index.commit("feat!: breaking change in v0")
+
+    # With --v0, breaking in 0.x should bump to 0.3.0 (minor), NOT 1.0.0
+    res = runner.invoke(app, ["preview", "--v0", "--json", str(tmp_path)])
+    assert res.exit_code == 0
+    data = json.loads(res.stdout)
+    assert data["next_version"] == "0.3.0"
+    assert data["bump_type"] == "minor"

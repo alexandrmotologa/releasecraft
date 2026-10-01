@@ -31,18 +31,58 @@ DEFAULT_SECTIONS: list[SectionConfig] = [
 ]
 
 
+class WebhookConfig(BaseModel):
+    """Configuration for a release announcement webhook."""
+
+    url: str
+    type: str = "generic"
+
+
+class LinksConfig(BaseModel):
+    """Link format templates for issues and commits."""
+
+    github_repo: str | None = None
+    issue_url: str | None = None
+    commit_url: str | None = None
+
+
+class ReleaseOptionsConfig(BaseModel):
+    """Release execution options."""
+
+    sign_tag: bool = False
+    create_draft: bool = False
+    prerelease: bool = False
+    generate_checksums: bool = True
+    assets: list[str] = Field(default_factory=list)
+
+
 class ReleaseCraftConfig(BaseModel):
     """Project-wide release and changelog configuration."""
 
     tag_format: str = "v{version}"
+    tag_prefix: str = ""
     changelog_path: str = "CHANGELOG.md"
     remote: str = "origin"
     default_branch: str = "main"
     initial_version: str = "0.1.0"
+    bump_manifests: bool = True
+    zero_semver: bool = False
+    provider: str = "auto"
     sections: list[SectionConfig] = Field(default_factory=lambda: list(DEFAULT_SECTIONS))
     github_repo: str | None = None
     sign_tag: bool = False
+    links: LinksConfig = Field(default_factory=LinksConfig)
+    webhooks: list[WebhookConfig] = Field(default_factory=list)
+    release: ReleaseOptionsConfig = Field(default_factory=ReleaseOptionsConfig)
+    manifest_patterns: list[str] = Field(default_factory=list)
     extra: dict[str, Any] = Field(default_factory=dict)
+
+    def model_post_init(self, __context: Any) -> None:
+        """Harmonize backward-compatible configuration fields."""
+        if not self.github_repo and self.links.github_repo:
+            self.github_repo = self.links.github_repo
+        if self.release.sign_tag:
+            self.sign_tag = True
 
     @classmethod
     def load(cls, repo_root: Path | str | None = None) -> "ReleaseCraftConfig":

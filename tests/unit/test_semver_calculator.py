@@ -77,3 +77,33 @@ def test_initial_version_when_no_current() -> None:
 
     assert str(next_ver) == "0.1.0"
     assert bump == BumpType.PATCH
+
+
+def test_zero_semver_breaking_bumps_minor() -> None:
+    commits = [
+        make_parsed("feat!: drop old config format"),
+    ]
+    current = SemVerInfo(major=0, minor=3, patch=1)
+    next_ver, bump = SemVerCalculator.calculate_next_version(
+        current,
+        commits,
+        zero_semver=True,
+    )
+
+    assert bump == BumpType.MINOR
+    assert str(next_ver) == "0.4.0"
+
+
+def test_zero_semver_feat_bumps_patch() -> None:
+    commits = [
+        make_parsed("feat: add sqlite support"),
+    ]
+    current = SemVerInfo(major=0, minor=3, patch=1)
+    next_ver, bump = SemVerCalculator.calculate_next_version(
+        current,
+        commits,
+        zero_semver=True,
+    )
+
+    assert bump == BumpType.PATCH
+    assert str(next_ver) == "0.3.2"

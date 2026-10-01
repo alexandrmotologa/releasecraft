@@ -54,6 +54,7 @@ class SemVerCalculator:
         bump_override: BumpType | None = None,
         prerelease_token: str | None = None,
         initial_version: str = "0.1.0",
+        zero_semver: bool = False,
     ) -> tuple[SemVerInfo, BumpType]:
         """Compute the next version according to SemVer 2.0.0 mathematics.
 
@@ -63,6 +64,7 @@ class SemVerCalculator:
             bump_override: Optional explicit bump type override.
             prerelease_token: Optional pre-release identifier (e.g. 'rc', 'beta').
             initial_version: Fallback version string if no previous tags exist.
+            zero_semver: If True, operates in 0.x mode where breaking bumps minor and feat bumps patch.
 
         Returns:
             Tuple of (next_version: SemVerInfo, bump_type: BumpType).
@@ -79,19 +81,36 @@ class SemVerCalculator:
         bump = bump_override or cls.determine_bump_type(commits)
         v = current_version.to_version()
 
-        if bump == BumpType.MAJOR:
-            next_v = v.bump_major()
-        elif bump == BumpType.MINOR:
-            next_v = v.bump_minor()
-        elif bump == BumpType.PATCH:
-            next_v = v.bump_patch()
-        elif bump == BumpType.NONE:
-            next_v = v
+        if zero_semver and v.major == 0 and bump_override is None:
+            if bump == BumpType.MAJOR:
+                bump = BumpType.MINOR
+                next_v = v.bump_minor()
+            elif bump == BumpType.MINOR:
+                bump = BumpType.PATCH
+                next_v = v.bump_patch()
+            elif bump == BumpType.PATCH:
+                next_v = v.bump_patch()
+            elif bump == BumpType.NONE:
+                next_v = v
+            else:
+                next_v = v.bump_patch()
         else:
-            next_v = v.bump_patch()
+            if bump == BumpType.MAJOR:
+                next_v = v.bump_major()
+            elif bump == BumpType.MINOR:
+                next_v = v.bump_minor()
+            elif bump == BumpType.PATCH:
+                next_v = v.bump_patch()
+            elif bump == BumpType.NONE:
+                next_v = v
+            else:
+                next_v = v.bump_patch()
 
         if prerelease_token:
-            next_v = next_v.bump_prerelease(token=prerelease_token)
+            if v.prerelease and prerelease_token in v.prerelease:
+                next_v = v.bump_prerelease(token=prerelease_token)
+            else:
+                next_v = next_v.bump_prerelease(token=prerelease_token)
             bump = BumpType.PRERELEASE
 
         result = SemVerInfo(
