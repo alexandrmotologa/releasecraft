@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "releasecraft"
-version = "0.1.0"
+version = "0.1.1"
 description = "Semantic Git release manager and changelog engine with interactive TUI"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -70,3 +70,4 @@ testpaths = ["tests/unit", "tests/integration"]
 norecursedirs = [".venv", "dist", "build"]
 pythonpath = ["src"]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

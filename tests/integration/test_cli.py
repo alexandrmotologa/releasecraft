@@ -44,6 +44,21 @@ def test_cli_version() -> None:
     result = runner.invoke(app, ["version"])
     assert result.exit_code == 0
     assert "ReleaseCraft" in result.stdout
+    assert "v0.1.1" in result.stdout
+
+
+def test_cli_version_flag() -> None:
+    result = runner.invoke(app, ["--version"])
+    assert result.exit_code == 0
+    assert "ReleaseCraft" in result.stdout
+    assert "v0.1.1" in result.stdout
+
+
+def test_cli_short_version_flag() -> None:
+    result = runner.invoke(app, ["-v"])
+    assert result.exit_code == 0
+    assert "ReleaseCraft" in result.stdout
+    assert "v0.1.1" in result.stdout
 
 
 def test_cli_check(repo_with_commits: git.Repo, tmp_path: Path) -> None:

@@ -57,6 +57,29 @@ app.add_typer(hook_app, name="hook")
 console = Console(legacy_windows=False)
 
 
+def version_callback(value: bool) -> None:
+    if value:
+        console.print(f"[bold cyan]ReleaseCraft[/bold cyan] v{__version__}")
+        raise typer.Exit()
+
+
+@app.callback()
+def main(
+    version: Annotated[
+        bool | None,
+        typer.Option(
+            "--version",
+            "-v",
+            callback=version_callback,
+            is_eager=True,
+            help="Show version and exit.",
+        ),
+    ] = None,
+) -> None:
+    """Semantic Git release manager and changelog engine with interactive TUI."""
+    pass
+
+
 @app.command()
 def version() -> None:
     """Show ReleaseCraft version and build information."""
